@@ -25,16 +25,16 @@ class MainWindow(QMainWindow):
 
         self.go_button.clicked.connect(lambda: self.searchByURL(self.urlbar.toPlainText()))
 
-        self.forward  = QPushButton("->")
-        self.forward.setMinimumHeight(30)
+        self.forwardbtn  = QPushButton("->")
+        self.forwardbtn.setMinimumHeight(30)
 
 
-        self.backward = QPushButton("<-")
-        self.backward.setMinimumHeight(30)
+        self.backwardbtn = QPushButton("<-")
+        self.backwardbtn.setMinimumHeight(30)
 
 
-        self.horizontal.addWidget(self.backward)
-        self.horizontal.addWidget(self.forward)
+        self.horizontal.addWidget(self.backwardbtn)
+        self.horizontal.addWidget(self.forwardbtn)
         self.horizontal.addWidget(self.urlbar)
         self.horizontal.addWidget(self.go_button)
 
@@ -47,14 +47,24 @@ class MainWindow(QMainWindow):
         self.window.setLayout(self.layout)
         self.window.show()
 
-        self.forward.clicked.connect(self.browser.forward)
+        self.browser.urlChanged.connect(lambda url: self.urlbar.setText(url.toString()))
 
-        self.backward.clicked.connect(self.browser.back)
+        self.backwardbtn.clicked.connect(self.browser.back)
+        self.forwardbtn.clicked.connect(self.browser.forward)
 
     def searchByURL(self, url):
-        if not url.startswith("https"):
-            url = "https://"+url
-            self.urlbar.setText(url)
+        if "." in url:
+            if not url.startswith("https") and not url.startswith("http"):
+                url = "https://"+url
+                self.urlbar.setText(url)
+                self.browser.setUrl(QUrl(url))
+            else:
+                self.browser.setUrl(QUrl(url))
+        else:
+            self.browser.setUrl(QUrl("https://www.google.com/search?q="+url))
+
+
+
 
 
 
